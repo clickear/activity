@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link href="plugs/formdesign/css/bootstrap/css/bootstrap.css?2023" rel="stylesheet" type="text/css" />
+    <link href="css/site.css?2023" rel="stylesheet" type="text/css" />
+    <link href="my_css/a.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        var _root='http://form/index.php?s=/',_controller = 'index';
+    </script> 
+ </head>
+<body style="margin:0">
+<!-- fixed navbar -->  
+<!-- Docs page layout -->  
+<div id="idv1" style="width:100%;position: absolute;height:auto">  
+<div id="formDiv" style="width:89%;height:auto;position:relative;float:left;margin-left:10px;margin-top:10px;">  
+  
+  
+<div class="container">  
+<form method="post" id="saveform" name="saveform" action="/index.php?s=/index/parse.html">  
+<input type="hidden" name="fields" id="fields" value="0">  
+<div style="width:98%;height:510px;margin-top:20px;border:3px solid grey">  
+  <p style="margin-top:10px;font-size:30px" >表单名称：<input type="text" id="formType"></input></p>  
+  <hr style="height:5px;border:none;border-top:5px ridge green;"/>  
+  <p style="margin-top:10px;font-size:30px" >表单设计：</p>  
+ <div >  
+<p style="left:30px">  
+        <button type="button" onclick="leipiFormDesign.exec('text');" class="btn btn-info">文本框</button>  
+        <button type="button" onclick="leipiFormDesign.exec('textarea');" class="btn btn-info">多行文本</button>  
+        <button type="button" onclick="leipiFormDesign.exec('select');" class="btn btn-info">下拉菜单</button>  
+        <button type="button" onclick="leipiFormDesign.exec('radios');" class="btn btn-info">单选框</button>  
+        <button type="button" onclick="leipiFormDesign.exec('checkboxs');" class="btn btn-info">复选框</button>         
+        <button type="button" onclick="leipiFormDesign.exec('listctrl');" class="btn btn-info">列表控件</button>  
+       <!--   <button type="button" onclick="leipiFormDesign.findForm();" class="btn btn-info">form</button>-->  
+</p>  
+  
+  
+</div>  
+<!-- afsddddddddd -->
+<div >
+<script id="myFormDesign" type="text/plain" style="width:99.8%;">
+</script>
+</div>   
+</div>
+<!-- afsddddddddd -->
+<div class="row">
+
+
+</div><!--end row-->
+</form>
+</div><!--end container-->
+<script type="text/javascript" charset="utf-8" src="js/jquery.min.js?2023"></script>
+<script type="text/javascript" charset="utf-8" src="plugs/formdesign/js/ueditor/ueditor.config.js?2023"></script>
+<script type="text/javascript" charset="utf-8" src="plugs/formdesign/js/ueditor/ueditor.all.js?2023"> </script>
+<script type="text/javascript" charset="utf-8" src="plugs/formdesign/js/ueditor/lang/zh-cn/zh-cn.js?2023"></script>
+<script type="text/javascript" charset="utf-8" src="plugs/formdesign/js/ueditor/formdesign/leipi.formdesign.v4.js?2023"></script>
+<!-- script start-->  
+<script type="text/javascript" charset="utf-8" src="plugs/formdesign/js/addForm.js"></script>
+<!-- script end -->
+<div style="width:1px;height:1px">
+  <script type="text/javascript">
+  var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+  var addurl="/hm_activity/flowDiagram/addForm.do"
+var listUrl="/hm_activity/page/formManager/list";
+  </script>
+</div>
+
+</div>
+</div>
+</body>
+</html>

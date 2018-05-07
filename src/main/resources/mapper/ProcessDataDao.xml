@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.huimin.process.web.dao.ProcessDataDao">
+  <select id="queryRestartProcess" resultType="cn.huimin.process.web.model.ProcessData" parameterType="cn.huimin.process.web.model.ProcessData">
+SELECT
+	art.ID_ AS taskId,
+	art.PROC_INST_ID_ AS processInstanceId,
+	art.CREATE_TIME_ AS startTime,
+	arp.NAME_ AS processDefName
+FROM
+	act_ru_task art,
+	act_re_procdef arp
+WHERE
+	art.PROC_DEF_ID_ = arp.ID_
+AND art.ASSIGNEE_ = #{startUserId}
+AND art.FORM_KEY_ = '1'
+ORDER BY startTime desc
+  </select>
+
+	<select id="queryStartedProcess" resultType="cn.huimin.process.web.model.ProcessData" parameterType="cn.huimin.process.web.model.ProcessData">
+		SELECT
+		processInstanceId,
+		startUserId,
+		applyTime,
+		stopTime,
+		processDefName,
+		processKey,
+		currentTaskName,
+		IFNULL(state,3) as state,
+		processCategory,
+		processInstanceName
+		FROM
+		(
+		SELECT
+		ahp.PROC_INST_ID_ AS processInstanceId,
+		ahp.START_USER_ID_ AS startUserId,
+		ahp.START_TIME_ AS applyTime,
+		ahp.END_TIME_ AS stopTime,
+		arp.NAME_ AS processDefName,
+		arp.KEY_ as processKey,
+		arp.CATEGORY_ as processCategory,
+		ahp.NAME_ as processInstanceName,
+		(
+		SELECT
+		DISTINCT act_ru_task.SUSPENSION_STATE_
+		FROM
+		act_ru_task
+		WHERE
+		act_ru_task.PROC_INST_ID_ = ahp.PROC_INST_ID_
+		) AS state,
+		(
+		SELECT
+		group_concat(act_ru_task.NAME_)
+		FROM
+		act_ru_task
+		WHERE
+		act_ru_task.PROC_INST_ID_ = ahp.PROC_INST_ID_
+		) AS currentTaskName
+		FROM
+		act_hi_procinst ahp
+		LEFT JOIN act_re_procdef arp ON ahp.PROC_DEF_ID_ = arp.ID_
+
+		) AS totalProce
+		<where>
+			<if test="processInstanceId != null and processInstanceId != ''">
+				and processInstanceId like CONCAT('%','${processInstanceId}','%')
+			</if>
+			<if test="processDefName != null and processDefName != ''">
+				and processDefName like CONCAT('%','${processDefName}','%')
+			</if>
+			<if test="processInstanceName != null and processInstanceName != ''">
+				and processInstanceName like CONCAT('%','${processInstanceName}','%')
+			</if>
+			<if test="startUserId != null and startUserId != ''">
+				and startUserId = #{startUserId}
+			</if>
+			<if test="state != null and state != 3">
+				and state = #{state,jdbcType=INTEGER}
+			</if>
+			<if test="state != null and state == 3">
+				and state IS NULL
+			</if>
+			<if test="processCategory != null">
+				and processCategory = #{processCategory,jdbcType=INTEGER}
+			</if>
+		</where>
+		ORDER BY state asc ,applyTime DESC
+	</select>
+
+
+	<select id="getProcessInstanceInfoByProcessInstanceId" resultType="cn.huimin.process.web.model.ProcessData" parameterType="java.lang.String">
+		SELECT
+		ahp.PROC_INST_ID_ processInstanceId,
+		ahp.START_USER_ID_ startUserId,
+		ahp.START_TIME_ applyTime,
+		arp.NAME_ processDefName,
+		arp.KEY_ processKey
+		FROM act_hi_procinst ahp
+		LEFT JOIN act_re_procdef arp on ahp.PROC_DEF_ID_ = arp.ID_
+		where  ahp.PROC_INST_ID_ = #{processInstanceId}
+	</select>
+
+
+
+
+
+
+
+
+
+
+</mapper>

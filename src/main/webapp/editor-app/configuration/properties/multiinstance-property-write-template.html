@@ -1,0 +1,8 @@
+
+<div ng-controller="KisBpmMultiInstanceCtrl">
+    <select ng-model="multiInstanceTypeInfo"  ng-options="m.value for m in multiInstanceTypeInfos " ng-change="multiInstanceChanged(m)">
+    </select>
+
+
+</div>
+{{multiInstanceTypeInfo.name}}

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:springcfg/spring-context.xml</param-value>
+  </context-param>
+  <filter>
+    <filter-name>encode</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>encode</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+
+
+  <listener>
+    <listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
+  </listener>
+
+  <filter>
+    <filter-name>CAS Single Sign Out Filter</filter-name>
+    <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CAS Single Sign Out Filter</filter-name>
+    <url-pattern>*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>CAS Validation Filter</filter-name>
+    <filter-class>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</filter-class>
+    <init-param>
+      <param-name>casServerUrlPrefix</param-name>
+      <!--<param-value>http://newcas.huimin100.cn</param-value>-->
+      <param-value>http://dl.beta.huimin100.cn/cas-web/</param-value>
+    </init-param>
+    <init-param>
+      <param-name>serverName</param-name>
+      <param-value>http://127.0.0.1:80</param-value>
+<!--
+      <param-value>http://localhost:18080</param-value>
+-->
+<!--
+      <param-value>http://123.56.178.231:18080</param-value>
+-->
+    </init-param>
+    <init-param>
+      <param-name>useSession</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>redirectAfterValidation</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <!-- 解决cas回传的中文乱码问题 -->
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>CAS Validation Filter</filter-name>
+    <url-pattern>*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>DruidWebStatFilter</filter-name>
+    <filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+    <init-param>
+      <!-- 经常需要排除一些不必要的url，比如.js,/jslib/等等。配置在init-param中 -->
+      <param-name>exclusions</param-name>
+      <param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*</param-value>
+    </init-param>
+    <!-- 缺省sessionStatMaxCount是1000个。你可以按需要进行配置 -->
+    <init-param>
+      <param-name>sessionStatMaxCount</param-name>
+      <param-value>1000</param-value>
+    </init-param>
+    <!-- druid 0.2.7版本开始支持profile，配置profileEnable能够监控单个url调用的sql列表 -->
+    <init-param>
+      <param-name>profileEnable</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>principalSessionName</param-name>
+      <param-value>users.username</param-value>
+    </init-param>
+    <!-- 你可以关闭session统计功能
+    <init-param>
+        <param-name>sessionStatEnable</param-name>
+        <param-value>true</param-value>
+    </init-param> -->
+  </filter>
+  <servlet>
+    <servlet-name>DruidStatView</servlet-name>
+    <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+    <!--
+        deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。
+        如果allow没有配置或者为空，则允许所有访问
+     -->
+    <init-param>
+      <param-name>allow</param-name>
+      <param-value>127.0.0.1</param-value>
+    </init-param>
+    <!-- 在StatViewSerlvet输出的html页面中，有一个功能是Reset All，执行这个操作之后，会导致所有计数器清零，重新计数 -->
+    <init-param>
+    <param-name>resetEnable</param-name>
+  <param-value>false</param-value>
+</init-param>
+
+  <!--  用户名和密码 -->
+<init-param>
+    <param-name>loginUsername</param-name>
+    <param-value>druid</param-value>
+  </init-param>
+    <init-param>
+      <param-name>loginPassword</param-name>
+      <param-value>druid</param-value>
+    </init-param>
+  </servlet>
+  <!--访问地址-->
+  <servlet-mapping>
+    <servlet-name>DruidStatView</servlet-name>
+    <url-pattern>/druid/*</url-pattern>
+  </servlet-mapping>
+
+
+  <filter>
+    <filter-name>CAS Filter</filter-name>
+    <filter-class>cn.huimin.process.web.util.CASAuthenticationFilter</filter-class>
+    <init-param>
+      <param-name>casServerLoginUrl</param-name>
+<!--
+      <param-value>http://dl.huimin100.cn.cn/login</param-value>
+-->
+      <param-value>http://dl.beta.huimin100.cn/cas-web/login</param-value>
+    </init-param>
+    <!-- 新加参数开始
+     <init-param>
+        <param-name>renew</param-name>
+        <param-value>false</param-value>
+    </init-param>
+    <init-param>
+        <param-name>gateway</param-name>
+        <param-value>false</param-value>
+    </init-param>
+        新加参数结束 -->
+    <init-param>
+      <param-name>serverName</param-name>
+      <param-value>http://127.0.0.1:80</param-value>
+
+<!--
+      <param-value>http://localhost:18080</param-value>
+-->
+
+<!--
+            <param-value>http://123.56.178.231:18080</param-value>
+-->
+    </init-param>
+    <!-- 填写放行URL -->
+    <init-param>
+      <description>放行URL</description>
+      <param-name>ExcludeFile</param-name>
+      <param-value>/openapi/process/,/openapi/task/,/activitiPic/</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>CAS Filter</filter-name>
+    <url-pattern>*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+    <filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+    <url-pattern>*</url-pattern>
+  </filter-mapping>
+  <!-- ====================    CAS单点登录结束      =====================   -->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+
+
+
+  <servlet>
+    <servlet-name>springmvc</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:springcfg/spring-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>springmvc</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>/index</welcome-file>
+    <!-- <welcome-file>/rest/sys/supermarket/queryData</welcome-file> -->
+  </welcome-file-list>
+
+
+  <!-- 出错页面定义 -->
+  <!-- <error-page>
+     <exception-type>java.lang.Throwable</exception-type>
+     <location>/error/500.jsp</location>
+   </error-page>
+   <error-page>
+     <error-code>500</error-code>
+     <location>/error/500.jsp</location>
+   </error-page>
+   <error-page>
+     <error-code>404</error-code>
+     <location>/error/404.jsp</location>
+   </error-page>
+   <error-page>
+     <error-code>403</error-code>
+     <location>/error/500.jsp</location>
+   </error-page>
+   <error-page>
+     <error-code>405</error-code>
+     <location>/error/405.jsp</location>
+   </error-page>
+ -->
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.css</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.xml</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.swf</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.zip</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.gif</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.jpg</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.png</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.js</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.json</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.woff</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.svg</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.woff2</url-pattern>
+  </servlet-mapping>
+
+</web-app>

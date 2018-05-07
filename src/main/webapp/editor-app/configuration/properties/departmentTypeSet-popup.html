@@ -1,0 +1,39 @@
+
+
+<!--流程挂接的界面-->
+<div class="modal" ng-controller="departmentTypeSetPopupCtrl">
+ <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">&times;</button>
+                <h3>{{'PROPERTY.PROPERTY.EDIT.TITLE' | translate:property}}</h3>
+            </div>
+            <div class="modal-body">
+
+                <div class="row row-no-gutter" style="margin-top: 3px">
+                    <table class="table table-striped table-bordered  table-hover">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>编号</th>
+                            <th>名称</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="form in formData">
+                            <td><input type="checkbox" ng-checked="form.diction_id == departmenttypeset " ng-true-value="{{form.diction_id}}" ng-click="updateSelection($event,$index, formData,form.diction_name,form.diction_id)" ng-model="form.checked"></td>
+                            <td>{{form.diction_id}}</td>
+                            <td>{{form.diction_name}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            
+            </div>
+            <div class="modal-footer">
+                <button ng-click="close()" class="btn btn-primary" translate>ACTION.CANCEL</button>
+                <button ng-click="save()" class="btn btn-primary" translate>ACTION.SAVE</button>
+            </div>
+        </div>
+    </div>
+</div>

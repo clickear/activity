@@ -1,0 +1,48 @@
+
+<!--关联表单  model  -->
+<div class="modal" ng-controller="ProcessTypePopupCtrl">
+ <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="close()">&times;</button>
+                <h3>{{'PROPERTY.PROPERTY.EDIT.TITLE' | translate:property}}</h3>
+            </div>
+            <div class="modal-body">
+
+                <div class="row row-no-gutter form-inline">
+                    <div class="form-group">
+                        <label>类别名称：</label>
+                        <input type="text"  ng-model="processName" class="form-control"/>
+                    </div>
+                    <button type="button" class="btn btn-default" ng-click="find()">查找</button>
+                </div>
+
+
+
+                <div class="row row-no-gutter">
+                	<table class="table table-striped table-bordered  table-hover">
+                	<thead>
+                		<tr>
+                			<th>选择</th>
+                			<th>编号</th>
+                			<th>名字</th>
+                		</tr>
+                	</thead>
+                	<tbody>
+                		<tr ng-repeat="form in formData.rows">
+                			<td><input type="checkbox" ng-checked="processtype == form.codeId" ng-value="{{form.codeId}}" ng-click="updateSelection($event,$index, formData.rows,form.name)" ng-model="form.checked"></td>
+                			<td>{{form.codeId}}</td>
+                			<td>{{form.name}}</td>
+                		</tr>
+                	</tbody>
+                	</table>
+                </div>
+            
+            </div>
+            <div class="modal-footer">
+                <button ng-click="close()" class="btn btn-primary" translate>ACTION.CANCEL</button>
+                <button ng-click="save()" class="btn btn-primary" translate>ACTION.SAVE</button>
+            </div>
+        </div>
+    </div>
+</div>

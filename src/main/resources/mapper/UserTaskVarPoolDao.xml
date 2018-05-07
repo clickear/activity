@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.huimin.process.web.dao.UserTaskVarPoolDao">
+	<!--获取所有的-->
+    <select id="getByProcessKey" parameterType="cn.huimin.process.web.model.UserTaskVarPool" resultType="cn.huimin.process.web.model.UserTaskVarPool">
+     SELECT
+  	id as id,
+ 	 process_key as processKey,
+  user_task_var_info as userTaskVarInfo,
+  	type_ as type,
+		process_def_id as processDefId
+		FROM act_task_var_pool WHERE
+		process_key =#{processKey} AND type_ =#{type} AND process_def_id IS NULL
+  </select>
+
+	<select id="getByProcessDefId" parameterType="cn.huimin.process.web.model.UserTaskVarPool" resultType="cn.huimin.process.web.model.UserTaskVarPool">
+		SELECT
+		id as id,
+		process_key as processKey,
+		user_task_var_info as userTaskVarInfo,
+		type_ as type,
+		process_def_id as processDefId
+		FROM act_task_var_pool WHERE
+		 type_ =#{type} AND process_def_id = #{processDefId}
+	</select>
+
+
+
+	<select id="getListByProcessKey" parameterType="java.lang.String" resultType="cn.huimin.process.web.model.UserTaskVarPool">
+		SELECT
+		id as id,
+		process_key as processKey,
+		process_def_id as processDefId,
+		user_task_var_info as userTaskVarInfo,
+		type_ as type
+		FROM act_task_var_pool WHERE process_key =#{processKey} and process_def_id IS  NULL
+ 	</select>
+
+
+	<insert id="insert"  useGeneratedKeys="true" parameterType="cn.huimin.process.web.model.UserTaskVarPool">
+		INSERT
+		INTO
+			act_task_var_pool(process_key,process_def_id, user_task_var_info,type_)
+		VALUE
+		(#{processKey},#{processDefId},#{userTaskVarInfo},#{type})
+	</insert>
+
+
+
+	<update id="update" parameterType="cn.huimin.process.web.model.UserTaskVarPool">
+		UPDATE act_task_var_pool
+		SET user_task_var_info = #{userTaskVarInfo}
+		WHERE  process_key = #{processKey}
+		and type_ = #{type}
+		AND  process_def_id IS NULL
+	</update>
+
+
+
+
+
+</mapper>

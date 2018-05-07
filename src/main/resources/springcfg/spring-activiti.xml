@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+
+	http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+	<!--activiti数据源 -->
+	<bean id="dataSourceActiviti" class="com.alibaba.druid.pool.DruidDataSource"
+		  init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${driverClassName}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
+		<property name="defaultAutoCommit" value="${defaultAutoCommit}" />
+		<property name="maxActive" value="${maxActive}" />
+		<property name="initialSize" value="${initialSize}" />
+		<property name="minIdle" value="${minIdle}" />
+		<property name="maxWait" value="${maxWait}"></property>
+		<property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}"></property>
+		<property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}"></property>
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<!--
+            打开PSCache，并且指定每个连接上PSCache的大小
+            如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false
+        -->
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		<!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->
+		<property name="filters" value="stat,wall,log4j" />
+
+		<!--
+            如果配置了proxyFilters，此配置可以不配置
+            druid.stat.mergeSql=true 合并执行的相同sql，避免因为参数不同而统计多条sql语句
+            druid.stat.slowSqlMillis=10000 用来配置SQL慢的标准，执行时间超过slowSqlMillis的就是慢
+
+        <property name="connectionProperties" value="druid.stat.mergeSql=true;druid.stat.slowSqlMillis=10000" />
+         -->
+
+		<!-- 监控统计拦截的filters -->
+		<!-- 并在filters属性中配置了log4j -->
+		<property name="proxyFilters">
+			<list>
+				<ref bean="stat-filter" />
+				<ref bean="log-filter" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 慢SQL记录-->
+	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+		<property name="mergeSql" value="true" />
+		<property name="slowSqlMillis" value="10000" />
+		<property name="logSlowSql" value="true" />
+	</bean>
+
+	<bean id="log-filter" class="com.alibaba.druid.filter.logging.Log4jFilter">
+		<!-- <property name="resultSetLogEnabled" value="false" /> -->
+		<!-- <property name="statementExecutableSqlLogEnable" value="true" /> -->
+	</bean>
+
+
+	<!-- 配置druid监控spring jdbc -->
+	<bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor" />
+
+	<bean id="jdkRegexpMethodPointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
+		<property name="patterns">
+			<list>
+				<value>cn.huimin.process.web.dao</value>
+				<value>cn.huimin.process.web.service</value>
+			</list>
+		</property>
+	</bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!--特殊的扩展的实现 -->
+	<bean id="actCreationService" class="cn.huimin.process.web.service.imp.ActCreationServiceImpl"></bean>
+
+	<bean id="actCreationServiceEx" class="cn.huimin.process.web.service.imp.ActCreationServiceExImpl"></bean>
+
+	<bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
+	<tx:annotation-driven transaction-manager="transactionManagerActiviti" />
+
+	<!--mybatis的配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceActiviti" />
+		<!-- 自动匹配Mapper映射文件 -->
+		<property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageHelper">
+					<property name="properties">
+						<value>
+							dialect=mysql
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+	<!-- 通过扫描的模式，扫描目录在com.sqt.mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="cn.huimin.process.web.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	<bean id="sqlSessionForWrite" class="org.mybatis.spring.SqlSessionTemplate"
+		  scope="prototype">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+	<bean id="transactionManagerActiviti"
+		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceActiviti" />
+	</bean>
+	<bean id="uuidGenerator"
+		  class="org.activiti.engine.impl.persistence.StrongUuidGenerator"></bean>
+	<bean id="shareniuActivity" class="cn.huimin.process.core.ShareniuActivityBehaviorFactoryExt">
+		<property name="processEngineConfigurationEx" ref="processEngineConfiguration"></property>
+
+	</bean>
+	<bean id="processEngineConfiguration"
+		  class="cn.huimin.process.processengine.ProcessEngineConfigurationEx">
+		<property name="dataSource" ref="dataSourceActiviti" />
+		<property name="databaseType" value="mysql"></property>
+		<property name="enableDatabaseEventLogging" value="true"></property>
+		<property name="activityBehaviorFactory" ref="shareniuActivity" />
+		<property name="transactionManager" ref="transactionManagerActiviti" />
+		<property name="idGenerator" ref="uuidGenerator"></property>
+		<property name="databaseSchemaUpdate" value="true" />
+		<property name="jobExecutorActivate" value="false" />
+		<property name="history" value="full"></property>
+		<property name="bpmnDeployer">
+		<bean id="shareniuBpmnDeployer" class="cn.huimin.process.core.deployer.ShareniuBpmnDeployer"></bean>
+		</property>
+		<property name="processDiagramGenerator">
+		<bean id="hMProcessDiagramGenerator" class="cn.huimin.process.core.image.HMProcessDiagramGenerator"></bean>
+		</property>
+		<property name="customSessionFactories">
+			<list>
+				<bean class="cn.huimin.process.core.ShareniuSessionFactory"></bean>
+				<bean class="cn.huimin.process.core.session.ShareniuHistoryManagerSessionFactory"></bean>
+			</list>
+		</property>
+		<property name="customDefaultBpmnParseHandlers">
+			<list>
+				<bean class="cn.huimin.process.core.HmUserTaskParseHandler"></bean>
+			</list>
+		</property>
+		<property name="activityFontName" value="宋体" />
+		<property name="labelFontName" value="宋体" />
+		<property name="typedEventListeners">
+			<map>
+				<entry key="TASK_COMPLETED">
+					<bean id="taskComplete" class="cn.huimin.process.listener.TaskCompleteHandler">
+					</bean>
+				</entry>
+				<entry key="PROCESS_COMPLETED">
+					<bean id="processFinishHandle" class="cn.huimin.process.listener.ProcessFinishHandler">
+						<property name="actCreationService" ref="actCreationServiceEx"></property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+		<property name="startEngineEventListeners">
+			<list>
+				<bean class="cn.huimin.process.web.managerex.LoadActCreation">
+				</bean>
+
+			</list>
+
+		</property>
+	</bean>
+
+	<bean id="shareniuUserTaskActivityBehaviorExt" class="cn.huimin.process.core.ShareniuUserTaskActivityBehaviorExt" scope="prototype">
+	
+	</bean>
+	<!-- 加载activiti引擎 -->
+	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
+	</bean>
+
+	<!--activiti的各种服务接口 -->
+	<bean id="repositoryService" factory-bean="processEngine"
+		  factory-method="getRepositoryService" />
+	<bean id="runtimeService" factory-bean="processEngine"
+		  factory-method="getRuntimeService" />
+	<bean id="taskService" factory-bean="processEngine"
+		  factory-method="getTaskService" />
+	<bean id="historyService" factory-bean="processEngine"
+		  factory-method="getHistoryService" />
+	<bean id="managementService" factory-bean="processEngine"
+		  factory-method="getManagementService" />
+	<bean id="IdentityService" factory-bean="processEngine"
+		  factory-method="getIdentityService" />
+	<bean id="formService" factory-bean="processEngine"
+		  factory-method="getFormService" />
+
+
+</beans>

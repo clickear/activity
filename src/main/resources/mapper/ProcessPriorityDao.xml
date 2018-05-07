@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.huimin.process.web.dao.ProcessPriorityDao">
+  <resultMap id="baseModelResultMap" type="cn.huimin.process.web.model.ProcessPriority">
+    <id property="id" column="id" jdbcType="INTEGER" />
+    <result property="priority" column="priority" jdbcType="INTEGER" />
+    <result property="createTime" column="create_time" jdbcType="DATE" />
+    <result property="procInstId" column="proc_inst_id" jdbcType="VARCHAR" />
+    <result property="handTime" column="hand_time" jdbcType="INTEGER" />
+
+
+  </resultMap> 
+  <select id="selectByProcInstId" parameterType="java.lang.String" resultMap="baseModelResultMap">
+  
+  select * from hm_process_priority  where proc_inst_id=#{id}
+  </select>
+
+
+  <insert id="insertProcessPriority" parameterType="cn.huimin.process.web.model.ProcessPriority" useGeneratedKeys="true" keyProperty="id">
+    insert into hm_process_priority
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="priority != null">
+        priority,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="procInstId != null">
+        proc_inst_id,
+      </if>
+      <if test="handTime != null">
+        hand_time,
+    </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="priority != null">
+        #{priority, jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime, jdbcType=TIMESTAMP},
+      </if>
+      <if test="procInstId != null">
+        #{procInstId,jdbcType=VARCHAR},
+      </if>
+      <if test="handTime != null">
+        #{handTime, jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateProcessPriorityByProcessInstanceId" parameterType="cn.huimin.process.web.model.ProcessPriority">
+    UPDATE hm_process_priority SET priority = #{priority},hand_time = #{handTime}  WHERE proc_inst_id = #{procInstId}
+  </update>
+  
+ <delete id="deleteProcessPriorityByProcessInstanceId" parameterType="java.lang.String">
+   DELETE  FROM hm_process_priority WHERE proc_inst_id = #{processInstanceId}
+
+ </delete>
+
+
+</mapper>

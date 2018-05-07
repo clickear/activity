@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.huimin.process.web.dao.ProcessRoleDao">
+  <select id="pageQueryProcessKey" resultType="String">
+    SELECT processDefKey
+        FROM  process_role
+        where state =1
+        and branchid=#{branchid}
+        and departmentid= #{departmentid}
+        and roleid=#{roleid}
+        limit #{start},#{max}
+  </select>
+  <select id="processRoleCount" resultType="java.lang.Long">
+    SELECT COUNT(*)
+    FROM  process_role
+    where state =1
+       and branchid=#{branchid}
+       and departmentid= #{departmentid}
+       and roleid=#{roleid}
+  </select>
+  <insert id="insert" parameterType="cn.huimin.process.web.model.ProcessRole" useGeneratedKeys="true" keyProperty="id">
+    insert into process_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="adminid != null">
+        adminid,
+      </if>
+      <if test="departmentid != null">
+        departmentid,
+      </if>
+      <if test="branchid != null">
+        branchid,
+      </if>
+      <if test="roleid != null">
+        roleid,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+      <if test="updatetime != null">
+      updatetime,
+    </if>
+      <if test="creatorid != null">
+        creatorid,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="processId != null">
+        processId,
+      </if>
+      <if test="taskId != null">
+        taskId,
+      </if>
+      <if test="processDefKey != null">
+        processDefKey,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="adminid != null">
+        #{adminid, jdbcType=INTEGER},
+      </if>
+      <if test="departmentid != null">
+        #{departmentid, jdbcType=INTEGER},
+      </if>
+      <if test="branchid != null">
+        #{branchid, jdbcType=INTEGER},
+      </if>
+      <if test="roleid != null">
+        #{roleid, jdbcType=INTEGER},
+      </if>
+
+      <if test="createtime != null">
+        #{createtime, jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime, jdbcType=TIMESTAMP},
+      </if>
+      <if test="creatorid != null">
+        #{creatorid,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state, jdbcType=TINYINT},
+      </if>
+      <if test="processId != null">
+        #{processId,jdbcType=VARCHAR}
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=VARCHAR}
+      </if>
+      <if test="processDefKey != null">
+        #{processDefKey,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

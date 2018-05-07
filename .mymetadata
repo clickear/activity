@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="hm_activity"
+  id="myeclipse.1510305091522"
+  context-root="/hm_activity"
+  j2ee-spec="1.7"
+  archive="hm_activity.war">
+  <attributes>
+    <attribute name="webrootdir" value="src/main/webapp" />
+  </attributes>
+</project-module>
+
